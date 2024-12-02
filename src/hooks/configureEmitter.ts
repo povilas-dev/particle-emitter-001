@@ -18,12 +18,7 @@ const animationTypeToBehaviour = {
     textZone: Proton.ImageZone;
   }) => ({
     initialize(particle: any) {
-      // Set random radius within allowed limit
-      particle.R =
-        Math.random() * Math.min(MAX_ORBIT_RADIUS, canvas.width / 150);
-
-      // Set initial random angle and clone text position from text zone
-      particle.Angle = Math.random() * Math.PI * 2;
+      // Get final position directly from text zone
       particle.textPosition = textZone.getPosition().clone();
       particle.velocity = speed / 100;
 
@@ -37,22 +32,21 @@ const animationTypeToBehaviour = {
 
       // Set initial particle properties
       particle.radius = radius * 0.2;
-      particle.alpha = 1;
-      particle.spreadFactor = 0;
+      particle.alpha = 0; // Start transparent
     },
     applyBehaviour(particle: any) {
-      // Increment the angle to create orbital motion
-      particle.Angle += ANGLE_INCREMENT;
+      // Gradually move the particle towards its final position
+      particle.p.x +=
+        (particle.textPosition.x - particle.p.x) * particle.velocity;
+      particle.p.y +=
+        (particle.textPosition.y - particle.p.y) * particle.velocity;
 
-      // Calculate target position based on current angle
-      const targetX =
-        particle.textPosition.x + particle.R * Math.cos(particle.Angle);
-      const targetY =
-        particle.textPosition.y + particle.R * Math.sin(particle.Angle);
-
-      // Gradually move the particle towards the target position
-      particle.p.x += (targetX - particle.p.x) * particle.velocity;
-      particle.p.y += (targetY - particle.p.y) * particle.velocity;
+      // Fade in as it approaches its position
+      const distance = Math.hypot(
+        particle.p.x - particle.textPosition.x,
+        particle.p.y - particle.textPosition.y
+      );
+      particle.alpha = Math.max(0, 1 - distance / (canvas.width * 0.1));
     },
   }),
   fadeOut: ({
