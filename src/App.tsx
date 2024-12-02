@@ -5,10 +5,10 @@ import './App.css';
 function App() {
   const [animation, setAnimation] = useState<'fadeIn' | 'fadeOut'>('fadeIn');
   const text = 'hello';
-  const colors = [{color: '#FF0000'}, {color: '#FFFFFF'}];
+  const colors = [{color: '#FF0000'}];
   const radius = 5;
-  const speed = 4;
-  const particles = 3000;
+  const speed = 2.3;
+  const particleAmount = 3000;
   const containerRef = useRef<HTMLDivElement>(null);
   const svgTextRef = useRef<SVGSVGElement>(null);
 
@@ -18,16 +18,16 @@ function App() {
     radius,
     speed,
     animation,
-    particles,
+    particleAmount,
+    onAnimationEnd: () => {
+      console.log('END!');
+    },
   });
 
   const handleTriggerAnimation = () => {
-    console.log('handleTriggerAnimation');
     triggerAnimation();
     if (svgTextRef.current) {
-      // svgTextRef.current.removeAttribute('opacity');
       svgTextRef.current.classList.add('fade-in', 'one');
-      // svgTextRef.current.removeAttribute('opacity');
     }
   };
 

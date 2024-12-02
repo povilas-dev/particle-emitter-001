@@ -9,14 +9,16 @@ export const useProtonEmitter = ({
   radius,
   speed,
   animation,
-  particles,
+  particleAmount,
+  onAnimationEnd,
 }: {
   text: string;
-  colors: Array<Record<string, {color: string}>>;
+  colors: Array<{color: string}>;
   radius: number;
   speed: number;
   animation: 'fadeIn' | 'fadeOut';
-  particles: number;
+  particleAmount: number;
+  onAnimationEnd?: () => void;
 }) => {
   // Canvas and Proton refs
   const ref = useRef<HTMLCanvasElement>(null);
@@ -87,7 +89,8 @@ export const useProtonEmitter = ({
         radius: configRef.current?.radius,
         speed: configRef.current?.speed,
         animation: configRef.current?.animation,
-        particles: configRef.current?.particles,
+        particleAmount: configRef.current?.particleAmount,
+        onAnimationEnd: configRef.current?.onAnimationEnd,
       });
 
       animationHandlingRef.current = {trigger, reset};
@@ -167,10 +170,20 @@ export const useProtonEmitter = ({
       radius,
       speed,
       animation,
-      particles,
+      particleAmount,
+      onAnimationEnd,
     };
     emitParticles();
-  }, [text, colors, radius, speed, emitParticles, animation, particles]);
+  }, [
+    text,
+    colors,
+    radius,
+    speed,
+    emitParticles,
+    animation,
+    particleAmount,
+    onAnimationEnd,
+  ]);
 
   return {
     ref,

@@ -92,6 +92,6 @@ svg {
   animation-delay: 0.5s;
 
   text {
-    fill: #ffffff !important;
+    fill: red;
   }
 }

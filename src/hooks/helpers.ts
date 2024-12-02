@@ -53,8 +53,6 @@ export const createSvgText = (canvas: HTMLCanvasElement, text: string) => {
     fontSize = canvas.height * 0.8;
   }
 
-  console.log('svg font size: ', {fontSize});
-
   const svg = `
       <svg xmlns="http://www.w3.org/2000/svg"
         width="${canvas.width}"
