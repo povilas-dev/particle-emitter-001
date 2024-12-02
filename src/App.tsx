@@ -21,12 +21,21 @@ function App() {
     particleAmount,
     onAnimationEnd: () => {
       if (svgTextRef.current) {
-        svgTextRef.current.classList.add('fade-in', 'one');
+        if (animation === 'fadeIn') {
+          svgTextRef.current.classList.remove('fade-out');
+          svgTextRef.current.classList.add('fade-in', 'one');
+        }
       }
     },
   });
 
   const handleTriggerAnimation = () => {
+    if (animation === 'fadeOut') {
+      if (svgTextRef.current) {
+        svgTextRef.current.classList.remove('fade-in');
+        svgTextRef.current.classList.add('fade-out');
+      }
+    }
     triggerAnimation();
   };
 
