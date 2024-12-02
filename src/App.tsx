@@ -20,15 +20,14 @@ function App() {
     animation,
     particleAmount,
     onAnimationEnd: () => {
-      console.log('END!');
+      if (svgTextRef.current) {
+        svgTextRef.current.classList.add('fade-in', 'one');
+      }
     },
   });
 
   const handleTriggerAnimation = () => {
     triggerAnimation();
-    if (svgTextRef.current) {
-      svgTextRef.current.classList.add('fade-in', 'one');
-    }
   };
 
   return (
@@ -91,6 +90,7 @@ function App() {
             height="400"
             viewBox="0 0 400 400"
             ref={svgTextRef}
+            opacity={0}
           >
             <text
               x="50%"
