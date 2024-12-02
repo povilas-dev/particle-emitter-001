@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { configureEmitter } from './configureEmitter';
-import { createSvgText, loadImage, initializeProton } from './helpers';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {configureEmitter} from './configureEmitter';
+import {createSvgText, loadImage, initializeProton} from './helpers';
 import debounce from 'debounce';
 
 export const useProtonEmitter = ({
@@ -12,7 +12,7 @@ export const useProtonEmitter = ({
   particles,
 }: {
   text: string;
-  colors: Array<Record<string, { color: string }>>;
+  colors: Array<Record<string, {color: string}>>;
   radius: number;
   speed: number;
   animation: 'fadeIn' | 'fadeOut';
@@ -50,7 +50,7 @@ export const useProtonEmitter = ({
   // Handle canvas resize and particle system setup
   const emitParticles = useCallback(() => {
     const canvas = ref.current!;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const context = canvas.getContext('2d', {willReadFrequently: true});
 
     // Cleanup previous URL if exists
     if (urlRef.current) {
@@ -78,7 +78,7 @@ export const useProtonEmitter = ({
     loadImage(url).then((img) => {
       protonRef.current.removeEmitter(emitterRef.current);
 
-      const { emitter, initialize, trigger, reset } = configureEmitter({
+      const {emitter, initialize, trigger, reset} = configureEmitter({
         canvas,
         emitter: emitterRef.current,
         context: context!,
@@ -90,7 +90,7 @@ export const useProtonEmitter = ({
         particles: configRef.current?.particles,
       });
 
-      animationHandlingRef.current = { trigger, reset };
+      animationHandlingRef.current = {trigger, reset};
       protonRef.current.addEmitter(emitter);
       initialize();
       setIsInitialized(true);
@@ -114,7 +114,7 @@ export const useProtonEmitter = ({
         return;
       }
 
-      const { proton, emitter } = initializeProton(canvas);
+      const {proton, emitter} = initializeProton(canvas);
 
       protonRef.current = proton;
       emitterRef.current = emitter;
@@ -125,7 +125,7 @@ export const useProtonEmitter = ({
           return;
         }
 
-        const { width, height } = parentElement.getBoundingClientRect();
+        const {width, height} = parentElement.getBoundingClientRect();
 
         canvas.width = width;
         canvas.height = height;

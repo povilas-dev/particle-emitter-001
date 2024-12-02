@@ -1,6 +1,6 @@
 // @ts-nocheck
 import Proton from 'proton-engine';
-import { clamp } from './helpers';
+import {clamp} from './helpers';
 
 const ANGLE_INCREMENT = 0.02;
 const MAX_ORBIT_RADIUS = 9;
@@ -196,7 +196,7 @@ export const configureEmitter = ({
   emitter: any;
   context: CanvasRenderingContext2D;
   img: HTMLImageElement;
-  colors: Array<Record<string, { color: string }>>;
+  colors: Array<Record<string, {color: string}>>;
   radius: number;
   speed: number;
   animation: 'fadeIn' | 'fadeOut';
@@ -232,7 +232,7 @@ export const configureEmitter = ({
 
   // Extract colors from the provided color objects or use a default color if none are provided
   const colorsArray = Array.isArray(colors)
-    ? colors.map(({ color }) => color).filter((value) => value !== null)
+    ? colors.map(({color}) => color).filter((value) => value !== null)
     : ['#00aeff'];
 
   // Add color behavior to particles
@@ -240,11 +240,11 @@ export const configureEmitter = ({
 
   // Add animation-specific behavior to particles
   emitter.addBehaviour(
-    animationTypeToBehaviour[animation]({ radius, speed, canvas, textZone })
+    animationTypeToBehaviour[animation]({radius, speed, canvas, textZone})
   );
 
   // Retrieve handlers for the specified animation type
   const handlers = animationHandlersMapByAnimation[animation](emitter);
 
-  return { emitter, ...handlers };
+  return {emitter, ...handlers};
 };
