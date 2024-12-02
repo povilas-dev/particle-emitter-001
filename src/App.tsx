@@ -7,9 +7,10 @@ function App() {
   const text = 'hello';
   const colors = [{color: '#FF0000'}, {color: '#FFFFFF'}];
   const radius = 5;
-  const speed = 5;
+  const speed = 4;
   const particles = 3000;
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgTextRef = useRef<SVGSVGElement>(null);
 
   const {ref, triggerAnimation} = useProtonEmitter({
     text,
@@ -19,6 +20,16 @@ function App() {
     animation,
     particles,
   });
+
+  const handleTriggerAnimation = () => {
+    console.log('handleTriggerAnimation');
+    triggerAnimation();
+    if (svgTextRef.current) {
+      // svgTextRef.current.removeAttribute('opacity');
+      svgTextRef.current.classList.add('fade-in', 'one');
+      // svgTextRef.current.removeAttribute('opacity');
+    }
+  };
 
   return (
     <div>
@@ -49,7 +60,7 @@ function App() {
       <div style={{display: 'flex', justifyContent: 'flex-end'}}>
         <button
           style={{backgroundColor: 'red'}}
-          onClick={() => triggerAnimation()}
+          onClick={handleTriggerAnimation}
         >
           Trigger
         </button>
@@ -75,16 +86,13 @@ function App() {
           }}
         >
           <svg
-            id="my-text-svg"
             xmlns="http://www.w3.org/2000/svg"
             width="400"
             height="400"
             viewBox="0 0 400 400"
+            ref={svgTextRef}
           >
             <text
-              // className="fade-in one"
-              // id="my-text-element"
-              fill="#FFFFFF"
               x="50%"
               y="50%"
               textAnchor="middle"

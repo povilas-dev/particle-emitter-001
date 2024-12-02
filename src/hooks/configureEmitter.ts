@@ -20,6 +20,7 @@ const animationTypeToBehaviour = {
     initialize(particle: any) {
       // Get final position directly from text zone
       particle.textPosition = textZone.getPosition().clone();
+      // Set particle velocity based on speed
       particle.velocity = speed / 100;
 
       // Clamp text position within canvas bounds
@@ -30,23 +31,20 @@ const animationTypeToBehaviour = {
         canvas.height
       );
 
+      // Set random initial position across the canvas
+      particle.p.x = Math.random() * canvas.width; // Random x position
+      particle.p.y = Math.random() * canvas.height; // Random y position
+
       // Set initial particle properties
-      particle.radius = radius * 0.2;
-      particle.alpha = 0; // Start transparent
+      particle.radius = radius * 0.2; // Initial radius
+      particle.alpha = 1; // Start transparent
     },
     applyBehaviour(particle: any) {
       // Gradually move the particle towards its final position
       particle.p.x +=
-        (particle.textPosition.x - particle.p.x) * particle.velocity;
+        (particle.textPosition.x - particle.p.x) * particle.velocity; // Move x towards target
       particle.p.y +=
-        (particle.textPosition.y - particle.p.y) * particle.velocity;
-
-      // Fade in as it approaches its position
-      const distance = Math.hypot(
-        particle.p.x - particle.textPosition.x,
-        particle.p.y - particle.textPosition.y
-      );
-      particle.alpha = Math.max(0, 1 - distance / (canvas.width * 0.1));
+        (particle.textPosition.y - particle.p.y) * particle.velocity; // Move y towards target
     },
   }),
   fadeOut: ({
