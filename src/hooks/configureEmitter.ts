@@ -23,7 +23,7 @@ const animationTypeToBehaviour = {
     particleAmount: number;
     particles: any[];
   }) => {
-    const endAnimationTriggerCount = Math.round(particleAmount * 0.8);
+    const endAnimationTriggerCount = Math.round(particleAmount * 0.05);
 
     return {
       initialize(particle: any) {
@@ -62,7 +62,7 @@ const animationTypeToBehaviour = {
         // Check if the particle is close enough to its target position
         const distanceX = Math.abs(particle.textPosition.x - particle.p.x);
         const distanceY = Math.abs(particle.textPosition.y - particle.p.y);
-        const threshold = 1; // Define a threshold for "close enough"
+        const threshold = 4; // Define a threshold for "close enough"
 
         if (
           distanceX < threshold &&

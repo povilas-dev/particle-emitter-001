@@ -7,7 +7,7 @@ function App() {
   const text = 'hello';
   const colors = [{color: '#FF0000'}];
   const radius = 5;
-  const speed = 2.3;
+  const speed = 4;
   const particleAmount = 3000;
   const containerRef = useRef<HTMLDivElement>(null);
   const svgTextRef = useRef<SVGSVGElement>(null);
@@ -33,7 +33,7 @@ function App() {
     if (animation === 'fadeOut') {
       if (svgTextRef.current) {
         svgTextRef.current.classList.remove('fade-in');
-        svgTextRef.current.classList.add('fade-out');
+        svgTextRef.current.classList.add('fade-out', 'one');
       }
     }
     triggerAnimation();
