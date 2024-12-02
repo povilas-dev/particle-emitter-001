@@ -1,27 +1,47 @@
-import { useState } from 'react';
-import { useProtonEmitter } from './hooks/useProtonEmitter';
+import {useRef, useState} from 'react';
+import {useProtonEmitter} from './hooks/useProtonEmitter';
 import './App.css';
 
 function App() {
   const [animation, setAnimation] = useState<'fadeIn' | 'fadeOut'>('fadeIn');
-  const text = 'hells';
-  const colors = [{ color: '#FF0000' }, { color: '#FFFFFF' }];
+  const text = 'hello';
+  const colors = [{color: '#FF0000'}];
   const radius = 5;
-  const speed = 5;
-  const particles = 1000;
+  const speed = 4;
+  const particleAmount = 3000;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgTextRef = useRef<SVGSVGElement>(null);
 
-  const { ref, triggerAnimation } = useProtonEmitter({
+  const {ref, triggerAnimation} = useProtonEmitter({
     text,
     colors,
     radius,
     speed,
     animation,
-    particles,
+    particleAmount,
+    onAnimationEnd: () => {
+      if (svgTextRef.current) {
+        if (animation === 'fadeIn') {
+          svgTextRef.current.classList.remove('fade-out');
+          svgTextRef.current.classList.add('fade-in', 'one');
+        }
+      }
+    },
   });
+
+  const handleTriggerAnimation = () => {
+    if (animation === 'fadeOut') {
+      if (svgTextRef.current) {
+        svgTextRef.current.classList.remove('fade-in');
+        svgTextRef.current.classList.add('fade-out', 'one');
+      }
+    }
+    triggerAnimation();
+  };
 
   return (
     <div>
-      <fieldset style={{ width: '250px' }}>
+      <fieldset style={{width: '250px'}}>
         <legend>Select animation type</legend>
 
         <label htmlFor="fadeIn">Fade In</label>
@@ -45,18 +65,54 @@ function App() {
         />
       </fieldset>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{display: 'flex', justifyContent: 'flex-end'}}>
         <button
-          style={{ backgroundColor: 'red' }}
-          onClick={() => triggerAnimation()}
+          style={{backgroundColor: 'red'}}
+          onClick={handleTriggerAnimation}
         >
           Trigger
         </button>
       </div>
       <div
-        style={{ backgroundColor: 'black', height: '400px', width: '400px' }}
+        style={{
+          backgroundColor: 'black',
+          height: '400px',
+          width: '400px',
+          position: 'relative',
+        }}
+        id="container"
+        ref={containerRef}
       >
         <canvas ref={ref} />
+        <div
+          style={{
+            zIndex: 1000,
+            display: 'inline-block',
+            whiteSpace: 'nowrap',
+            position: 'absolute',
+            left: 0,
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="400"
+            height="400"
+            viewBox="0 0 400 400"
+            ref={svgTextRef}
+            opacity={0}
+          >
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontFamily="Arial"
+              fontSize="168.874px"
+            >
+              {text}
+            </text>
+          </svg>
+        </div>
       </div>
     </div>
   );

@@ -2,12 +2,12 @@ import Proton from 'proton-engine';
 
 export const initializeProton = (
   canvas: HTMLCanvasElement
-): { proton: Proton; emitter: Proton.Emitter } => {
+): {proton: Proton; emitter: Proton.Emitter} => {
   const proton = new Proton();
-  const emitter = new Proton.Emitter({ life: Infinity, dead: false });
+  const emitter = new Proton.Emitter({life: Infinity, dead: false});
   const renderer = new Proton.CanvasRenderer(canvas);
   proton.addRenderer(renderer);
-  return { proton, emitter };
+  return {proton, emitter};
 };
 
 export const loadImage = (url: string): Promise<HTMLImageElement> => {
@@ -55,7 +55,7 @@ export const createSvgText = (canvas: HTMLCanvasElement, text: string) => {
 
   const svg = `
       <svg xmlns="http://www.w3.org/2000/svg"
-        width="${canvas.width}" 
+        width="${canvas.width}"
         height="${canvas.height}"
         viewBox="0 0 ${canvas.width} ${canvas.height}">
           <text
@@ -69,7 +69,7 @@ export const createSvgText = (canvas: HTMLCanvasElement, text: string) => {
       </svg>
     `;
 
-  const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+  const svgBlob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
   return URL.createObjectURL(svgBlob);
 };
 

@@ -11,50 +11,76 @@ const animationTypeToBehaviour = {
     speed,
     canvas,
     textZone,
+    onAnimationEnd,
+    particleAmount,
+    particles,
   }: {
     radius: number;
     speed: number;
     canvas: HTMLCanvasElement;
     textZone: Proton.ImageZone;
-  }) => ({
-    initialize(particle: any) {
-      // Set random radius within allowed limit
-      particle.R =
-        Math.random() * Math.min(MAX_ORBIT_RADIUS, canvas.width / 150);
+    onAnimationEnd: () => void;
+    particleAmount: number;
+    particles: any[];
+  }) => {
+    const endAnimationTriggerCount = Math.round(particleAmount * 0.05);
 
-      // Set initial random angle and clone text position from text zone
-      particle.Angle = Math.random() * Math.PI * 2;
-      particle.textPosition = textZone.getPosition().clone();
-      particle.velocity = speed / 100;
+    return {
+      initialize(particle: any) {
+        // Get final position directly from text zone
+        particle.textPosition = textZone.getPosition().clone();
+        // Set particle velocity based on speed
+        particle.velocity = speed / 100;
 
-      // Clamp text position within canvas bounds
-      particle.textPosition.x = clamp(particle.textPosition.x, 0, canvas.width);
-      particle.textPosition.y = clamp(
-        particle.textPosition.y,
-        0,
-        canvas.height
-      );
+        // Clamp text position within canvas bounds
+        particle.textPosition.x = clamp(
+          particle.textPosition.x,
+          0,
+          canvas.width
+        );
+        particle.textPosition.y = clamp(
+          particle.textPosition.y,
+          0,
+          canvas.height
+        );
 
-      // Set initial particle properties
-      particle.radius = radius * 0.2;
-      particle.alpha = 1;
-      particle.spreadFactor = 0;
-    },
-    applyBehaviour(particle: any) {
-      // Increment the angle to create orbital motion
-      particle.Angle += ANGLE_INCREMENT;
+        // Set random initial position across the canvas
+        particle.p.x = Math.random() * canvas.width; // Random x position
+        particle.p.y = Math.random() * canvas.height; // Random y position
 
-      // Calculate target position based on current angle
-      const targetX =
-        particle.textPosition.x + particle.R * Math.cos(particle.Angle);
-      const targetY =
-        particle.textPosition.y + particle.R * Math.sin(particle.Angle);
+        // Set initial particle properties
+        particle.radius = radius * 0.2; // Initial radius
+        particle.alpha = 1; // Start transparent
+      },
+      applyBehaviour(particle: any) {
+        // Gradually move the particle towards its final position
+        particle.p.x +=
+          (particle.textPosition.x - particle.p.x) * particle.velocity; // Move x towards target
+        particle.p.y +=
+          (particle.textPosition.y - particle.p.y) * particle.velocity; // Move y towards target
 
-      // Gradually move the particle towards the target position
-      particle.p.x += (targetX - particle.p.x) * particle.velocity;
-      particle.p.y += (targetY - particle.p.y) * particle.velocity;
-    },
-  }),
+        // Check if the particle is close enough to its target position
+        const distanceX = Math.abs(particle.textPosition.x - particle.p.x);
+        const distanceY = Math.abs(particle.textPosition.y - particle.p.y);
+        const threshold = 4; // Define a threshold for "close enough"
+
+        if (
+          distanceX < threshold &&
+          distanceY < threshold &&
+          !particle.reachedTarget
+        ) {
+          particle.reachedTarget = true; // Mark particle as having reached its target
+          const reachedCount = particles.filter(
+            (_particle) => _particle.reachedTarget
+          ).length;
+
+          if (endAnimationTriggerCount === reachedCount) {
+            onAnimationEnd(); // Trigger the callback
+          }
+        }
+      },
+    };
+  },
   fadeOut: ({
     radius,
     canvas,
@@ -171,11 +197,13 @@ const animationHandlersMapByAnimation = {
     reset: () => {
       // Remove all particles and emit once to reset the fade-out animation
       emitter.removeAllParticles();
+
       emitter.particles.forEach((particle: any) => {
         particle.shouldSpread = false;
         particle.spreadFactor = 1;
         particle.alpha = 0;
       });
+
       emitter.emit('once');
     },
   }),
@@ -190,7 +218,8 @@ export const configureEmitter = ({
   radius,
   speed,
   animation,
-  particles,
+  particleAmount,
+  onAnimationEnd,
 }: {
   canvas: HTMLCanvasElement;
   emitter: any;
@@ -200,7 +229,8 @@ export const configureEmitter = ({
   radius: number;
   speed: number;
   animation: 'fadeIn' | 'fadeOut';
-  particles: number;
+  particleAmount: number;
+  onAnimationEnd: () => void;
 }) => {
   // Draw the provided image onto the canvas
   context?.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -228,7 +258,7 @@ export const configureEmitter = ({
   );
 
   // Set the emission rate - number of particles per span
-  emitter.rate = new Proton.Rate(new Proton.Span(particles));
+  emitter.rate = new Proton.Rate(new Proton.Span(particleAmount));
 
   // Extract colors from the provided color objects or use a default color if none are provided
   const colorsArray = Array.isArray(colors)
@@ -240,7 +270,15 @@ export const configureEmitter = ({
 
   // Add animation-specific behavior to particles
   emitter.addBehaviour(
-    animationTypeToBehaviour[animation]({radius, speed, canvas, textZone})
+    animationTypeToBehaviour[animation]({
+      radius,
+      speed,
+      canvas,
+      textZone,
+      onAnimationEnd,
+      particleAmount,
+      particles: emitter.particles,
+    })
   );
 
   // Retrieve handlers for the specified animation type
