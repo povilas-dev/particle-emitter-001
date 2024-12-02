@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import {useProtonEmitter} from './hooks/useProtonEmitter';
 import './App.css';
 
@@ -10,7 +10,6 @@ function App() {
   const speed = 5;
   const particles = 3000;
   const containerRef = useRef<HTMLDivElement>(null);
-  const spanRef = useRef<HTMLSpanElement>(null);
 
   const {ref, triggerAnimation} = useProtonEmitter({
     text,
@@ -20,42 +19,6 @@ function App() {
     animation,
     particles,
   });
-
-  function resizeText() {
-    console.log('resizeText!');
-    // const container = document.getElementById('container');
-    // const span = document.getElementById('resizable-text');
-    if (containerRef.current && spanRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const containerHeight = containerRef.current.offsetHeight;
-      console.log({containerHeight, containerWidth});
-
-      // Start with a large font size
-      let fontSize = 300;
-      spanRef.current.style.fontSize = fontSize + 'px';
-
-      console.log({
-        spanOffsetWidth: spanRef.current.offsetWidth,
-        spanOffsetHeight: spanRef.current.offsetHeight,
-      });
-
-      // Reduce font size until it fits within the container
-      while (
-        spanRef.current.offsetWidth > containerWidth ||
-        spanRef.current.offsetHeight > containerHeight
-      ) {
-        console.log({fontSize});
-        fontSize--;
-        spanRef.current.style.fontSize = fontSize + 'px';
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (spanRef.current && containerRef.current) {
-      resizeText();
-    }
-  }, [spanRef.current, containerRef.current]);
 
   return (
     <div>
@@ -107,28 +70,31 @@ function App() {
             zIndex: 1000,
             display: 'inline-block',
             whiteSpace: 'nowrap',
-            height: '100%',
-            width: '100%',
             position: 'absolute',
             left: 0,
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+          <svg
+            id="my-text-svg"
+            xmlns="http://www.w3.org/2000/svg"
+            width="400"
+            height="400"
+            viewBox="0 0 400 400"
           >
-            <span
-              ref={spanRef}
-              style={{padding: '0px 16px', fontFamily: 'Arial'}}
+            <text
+              // className="fade-in one"
+              // id="my-text-element"
+              fill="#FFFFFF"
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontFamily="Arial"
+              fontSize="168.874px"
             >
               {text}
-            </span>
-          </div>
+            </text>
+          </svg>
         </div>
       </div>
     </div>
