@@ -12,6 +12,7 @@ export const useProtonEmitter = ({
   animation,
   particleAmount,
   onAnimationEnd,
+  setFontSize,
 }: {
   text: string;
   colors: Array<{color: string}>;
@@ -20,6 +21,7 @@ export const useProtonEmitter = ({
   animation: 'fadeIn' | 'fadeOut';
   particleAmount: number;
   onAnimationEnd?: OnAnimationEndType;
+  setFontSize: (val: number) => void;
 }) => {
   // Canvas and Proton refs
   const ref = useRef<HTMLCanvasElement>(null);
@@ -74,7 +76,8 @@ export const useProtonEmitter = ({
 
     // Create and store new SVG URL
 
-    const url = createSvgText(canvas, configRef.current?.text);
+    const {url, fontSize} = createSvgText(canvas, configRef.current?.text);
+    setFontSize(fontSize);
     urlRef.current = url;
 
     // Load image and configure emitter

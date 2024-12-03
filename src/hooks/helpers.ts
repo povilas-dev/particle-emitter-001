@@ -19,7 +19,10 @@ export const loadImage = (url: string): Promise<HTMLImageElement> => {
   });
 };
 
-export const createSvgText = (canvas: HTMLCanvasElement, text: string) => {
+export const createSvgText = (
+  canvas: HTMLCanvasElement,
+  text: string
+): {url: string; fontSize: number} => {
   // Create a temporary SVG to measure text dimensions
   const measureSvg = document.createElementNS(
     'http://www.w3.org/2000/svg',
@@ -70,7 +73,7 @@ export const createSvgText = (canvas: HTMLCanvasElement, text: string) => {
     `;
 
   const svgBlob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
-  return URL.createObjectURL(svgBlob);
+  return {url: URL.createObjectURL(svgBlob), fontSize};
 };
 
 // Helper function to clamp values

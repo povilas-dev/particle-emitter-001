@@ -13,6 +13,7 @@ function App() {
   const speed = 4;
   const particleAmount = 3000;
   const svgTextRef = useRef<SVGSVGElement>(null);
+  const [fontSize, setFontSize] = useState(100);
 
   const {ref, triggerAnimation} = useProtonEmitter({
     text,
@@ -21,6 +22,7 @@ function App() {
     speed,
     animation,
     particleAmount,
+    setFontSize,
     onAnimationEnd: () => {
       if (svgTextRef.current) {
         if (animation === AnimationType.FADE_IN) {
@@ -107,7 +109,7 @@ function App() {
               textAnchor="middle"
               dominantBaseline="middle"
               fontFamily="Arial"
-              fontSize="168.874px"
+              fontSize={`${fontSize}px`}
             >
               {text}
             </text>
