@@ -1,11 +1,24 @@
-// @ts-nocheck
 import Proton from 'proton-engine';
 import {clamp} from './helpers';
+import {AnimationType, OnAnimationEndType} from '../interfaces';
 
 const ANGLE_INCREMENT = 0.02;
 const MAX_ORBIT_RADIUS = 9;
 
-const animationTypeToBehaviour = {
+interface AnimationTypeBehaviorProps {
+  radius: number;
+  speed: number;
+  canvas: HTMLCanvasElement;
+  textZone: Proton.ImageZone;
+  onAnimationEnd?: OnAnimationEndType;
+  particleAmount: number;
+  particles: any[];
+}
+
+const animationTypeToBehaviorMap: Record<
+  AnimationType,
+  (props: AnimationTypeBehaviorProps) => void
+> = {
   fadeIn: ({
     radius,
     speed,
@@ -14,14 +27,6 @@ const animationTypeToBehaviour = {
     onAnimationEnd,
     particleAmount,
     particles,
-  }: {
-    radius: number;
-    speed: number;
-    canvas: HTMLCanvasElement;
-    textZone: Proton.ImageZone;
-    onAnimationEnd: () => void;
-    particleAmount: number;
-    particles: any[];
   }) => {
     const endAnimationTriggerCount = Math.round(particleAmount * 0.05);
 
@@ -74,24 +79,14 @@ const animationTypeToBehaviour = {
             (_particle) => _particle.reachedTarget
           ).length;
 
-          if (endAnimationTriggerCount === reachedCount) {
-            onAnimationEnd(); // Trigger the callback
+          if (endAnimationTriggerCount === reachedCount && onAnimationEnd) {
+            onAnimationEnd(AnimationType.FADE_IN);
           }
         }
       },
     };
   },
-  fadeOut: ({
-    radius,
-    canvas,
-    textZone,
-    speed,
-  }: {
-    radius: number;
-    speed: number;
-    canvas: HTMLCanvasElement;
-    textZone: Proton.ImageZone;
-  }) => ({
+  fadeOut: ({radius, canvas, textZone, speed}) => ({
     initialize(particle: any) {
       // Set random radius within allowed limit
       particle.R =
@@ -228,9 +223,9 @@ export const configureEmitter = ({
   colors: Array<Record<string, {color: string}>>;
   radius: number;
   speed: number;
-  animation: 'fadeIn' | 'fadeOut';
+  animation: AnimationType;
   particleAmount: number;
-  onAnimationEnd: () => void;
+  onAnimationEnd?: OnAnimationEndType;
 }) => {
   // Draw the provided image onto the canvas
   context?.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -270,7 +265,7 @@ export const configureEmitter = ({
 
   // Add animation-specific behavior to particles
   emitter.addBehaviour(
-    animationTypeToBehaviour[animation]({
+    animationTypeToBehaviorMap[animation]({
       radius,
       speed,
       canvas,

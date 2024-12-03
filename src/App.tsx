@@ -1,15 +1,17 @@
 import {useRef, useState} from 'react';
 import {useProtonEmitter} from './hooks/useProtonEmitter';
 import './App.css';
+import {AnimationType} from './interfaces';
 
 function App() {
-  const [animation, setAnimation] = useState<'fadeIn' | 'fadeOut'>('fadeIn');
+  const [animation, setAnimation] = useState<AnimationType>(
+    AnimationType.FADE_IN
+  );
   const text = 'hello';
   const colors = [{color: '#FF0000'}];
   const radius = 5;
   const speed = 4;
   const particleAmount = 3000;
-  const containerRef = useRef<HTMLDivElement>(null);
   const svgTextRef = useRef<SVGSVGElement>(null);
 
   const {ref, triggerAnimation} = useProtonEmitter({
@@ -21,7 +23,7 @@ function App() {
     particleAmount,
     onAnimationEnd: () => {
       if (svgTextRef.current) {
-        if (animation === 'fadeIn') {
+        if (animation === AnimationType.FADE_IN) {
           svgTextRef.current.classList.remove('fade-out');
           svgTextRef.current.classList.add('fade-in', 'one');
         }
@@ -30,7 +32,7 @@ function App() {
   });
 
   const handleTriggerAnimation = () => {
-    if (animation === 'fadeOut') {
+    if (animation === AnimationType.FADE_OUT) {
       if (svgTextRef.current) {
         svgTextRef.current.classList.remove('fade-in');
         svgTextRef.current.classList.add('fade-out', 'one');
@@ -50,8 +52,8 @@ function App() {
           id="fadeIn"
           name="drone"
           value="fadeIn"
-          checked={animation === 'fadeIn'}
-          onClick={() => setAnimation('fadeIn')}
+          checked={animation === AnimationType.FADE_IN}
+          onClick={() => setAnimation(AnimationType.FADE_IN)}
         />
 
         <label htmlFor="fadeOut">Fade Out</label>
@@ -60,8 +62,8 @@ function App() {
           id="fadeOut"
           name="drone"
           value="fadeOut"
-          checked={animation === 'fadeOut'}
-          onClick={() => setAnimation('fadeOut')}
+          checked={animation === AnimationType.FADE_OUT}
+          onClick={() => setAnimation(AnimationType.FADE_OUT)}
         />
       </fieldset>
 
@@ -80,8 +82,6 @@ function App() {
           width: '400px',
           position: 'relative',
         }}
-        id="container"
-        ref={containerRef}
       >
         <canvas ref={ref} />
         <div
