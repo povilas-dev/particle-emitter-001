@@ -15,7 +15,7 @@ function App() {
   const svgTextRef = useRef<SVGSVGElement>(null);
   const [fontSize, setFontSize] = useState(100);
 
-  const {ref, triggerAnimation} = useProtonEmitter({
+  const {canvasRef, triggerAnimation} = useProtonEmitter({
     text,
     colors,
     radius,
@@ -23,9 +23,9 @@ function App() {
     animation,
     particleAmount,
     setFontSize,
-    onAnimationEnd: () => {
+    onAnimationEnd: (triggeredAnimation) => {
       if (svgTextRef.current) {
-        if (animation === AnimationType.FADE_IN) {
+        if (triggeredAnimation === AnimationType.FADE_IN) {
           svgTextRef.current.classList.remove('fade-out');
           svgTextRef.current.classList.add('fade-in', 'one');
         }
@@ -85,7 +85,7 @@ function App() {
           position: 'relative',
         }}
       >
-        <canvas ref={ref} />
+        <canvas ref={canvasRef} />
         <div
           style={{
             zIndex: 1000,

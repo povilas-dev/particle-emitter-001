@@ -24,7 +24,7 @@ export const useProtonEmitter = ({
   setFontSize: (val: number) => void;
 }) => {
   // Canvas and Proton refs
-  const ref = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const protonRef = useRef<any | null>(null);
   const emitterRef = useRef<any | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -54,7 +54,7 @@ export const useProtonEmitter = ({
 
   // Handle canvas resize and particle system setup
   const emitParticles = useCallback(() => {
-    const canvas = ref.current!;
+    const canvas = canvasRef.current!;
     const context = canvas.getContext('2d', {willReadFrequently: true});
 
     // Cleanup previous URL if exists
@@ -113,8 +113,8 @@ export const useProtonEmitter = ({
   useEffect(() => {
     let parentElement: Element | null = null;
 
-    if (ref.current) {
-      const canvas = ref.current;
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
       parentElement = canvas.parentElement;
 
       if (!canvas || !parentElement) {
@@ -190,7 +190,7 @@ export const useProtonEmitter = ({
   ]);
 
   return {
-    ref,
+    canvasRef,
     triggerAnimation: () => {
       if (isInitialized && animationHandlingRef.current) {
         animationHandlingRef.current.trigger();
