@@ -2,7 +2,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {configureEmitter} from './configureEmitter';
 import {createSvgText, loadImage, initializeProton} from './helpers';
 import debounce from 'debounce';
-import {OnAnimationEndType} from '../interfaces';
+import {AnimationType, OnAnimationEndType} from '../interfaces';
 
 export const useProtonEmitter = ({
   text,
@@ -18,7 +18,7 @@ export const useProtonEmitter = ({
   colors: Array<{color: string}>;
   radius: number;
   speed: number;
-  animation: 'fadeIn' | 'fadeOut';
+  animation: AnimationType;
   particleAmount: number;
   onAnimationEnd?: OnAnimationEndType;
   setFontSize: (val: number) => void;

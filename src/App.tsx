@@ -34,6 +34,7 @@ function App() {
   });
 
   const handleTriggerAnimation = () => {
+    // If animation was fadeOut, we ant to trigger it right away
     if (animation === AnimationType.FADE_OUT) {
       if (svgTextRef.current) {
         svgTextRef.current.classList.remove('fade-in');
