@@ -2,6 +2,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {configureEmitter} from './configureEmitter';
 import {createSvgText, loadImage, initializeProton} from './helpers';
 import debounce from 'debounce';
+import {OnAnimationEndType} from '../interfaces';
 
 export const useProtonEmitter = ({
   text,
@@ -18,7 +19,7 @@ export const useProtonEmitter = ({
   speed: number;
   animation: 'fadeIn' | 'fadeOut';
   particleAmount: number;
-  onAnimationEnd?: () => void;
+  onAnimationEnd?: OnAnimationEndType;
 }) => {
   // Canvas and Proton refs
   const ref = useRef<HTMLCanvasElement>(null);
