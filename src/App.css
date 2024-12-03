@@ -105,9 +105,9 @@ svg {
   -moz-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 
-  -webkit-animation-duration: 0.2s;
-  -moz-animation-duration: 0.2s;
-  animation-duration: 0.2s;
+  -webkit-animation-duration: 0.8s;
+  -moz-animation-duration: 0.8s;
+  animation-duration: 0.8s;
 }
 
 .fade-out.one {

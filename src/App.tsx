@@ -28,6 +28,9 @@ function App() {
         if (triggeredAnimation === AnimationType.FADE_IN) {
           svgTextRef.current.classList.remove('fade-out');
           svgTextRef.current.classList.add('fade-in', 'one');
+          svgTextRef.current.style.animationDuration = `${2 / speed}s`;
+        } else {
+          svgTextRef.current.style.animationDuration = `${1 / (speed * 2)}s`;
         }
       }
     },
