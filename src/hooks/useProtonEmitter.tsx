@@ -2,7 +2,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {configureEmitter} from './configureEmitter';
 import {createSvgText, loadImage, initializeProton} from './helpers';
 import debounce from 'debounce';
-import {OnAnimationEndType} from '../interfaces';
+import {AnimationType, OnAnimationEndType} from '../interfaces';
 
 export const useProtonEmitter = ({
   text,
@@ -12,17 +12,19 @@ export const useProtonEmitter = ({
   animation,
   particleAmount,
   onAnimationEnd,
+  setFontSize,
 }: {
   text: string;
   colors: Array<{color: string}>;
   radius: number;
   speed: number;
-  animation: 'fadeIn' | 'fadeOut';
+  animation: AnimationType;
   particleAmount: number;
   onAnimationEnd?: OnAnimationEndType;
+  setFontSize: (val: number) => void;
 }) => {
   // Canvas and Proton refs
-  const ref = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const protonRef = useRef<any | null>(null);
   const emitterRef = useRef<any | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -52,7 +54,7 @@ export const useProtonEmitter = ({
 
   // Handle canvas resize and particle system setup
   const emitParticles = useCallback(() => {
-    const canvas = ref.current!;
+    const canvas = canvasRef.current!;
     const context = canvas.getContext('2d', {willReadFrequently: true});
 
     // Cleanup previous URL if exists
@@ -74,7 +76,8 @@ export const useProtonEmitter = ({
 
     // Create and store new SVG URL
 
-    const url = createSvgText(canvas, configRef.current?.text);
+    const {url, fontSize} = createSvgText(canvas, configRef.current?.text);
+    setFontSize(fontSize);
     urlRef.current = url;
 
     // Load image and configure emitter
@@ -110,8 +113,8 @@ export const useProtonEmitter = ({
   useEffect(() => {
     let parentElement: Element | null = null;
 
-    if (ref.current) {
-      const canvas = ref.current;
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
       parentElement = canvas.parentElement;
 
       if (!canvas || !parentElement) {
@@ -187,7 +190,7 @@ export const useProtonEmitter = ({
   ]);
 
   return {
-    ref,
+    canvasRef,
     triggerAnimation: () => {
       if (isInitialized && animationHandlingRef.current) {
         animationHandlingRef.current.trigger();

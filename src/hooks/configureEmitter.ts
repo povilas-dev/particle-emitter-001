@@ -29,6 +29,8 @@ const animationTypeToBehaviorMap: Record<
     particles,
   }) => {
     const endAnimationTriggerCount = Math.round(particleAmount * 0.05);
+    const fadeOutDuration = 60; // Number of frames for fade-out (adjust as needed)
+    let endAnimationTriggered = false;
 
     return {
       initialize(particle: any) {
@@ -56,8 +58,20 @@ const animationTypeToBehaviorMap: Record<
         // Set initial particle properties
         particle.radius = radius * 0.2; // Initial radius
         particle.alpha = 1; // Start transparent
+
+        particle.fadeOutProgress = 0;
       },
       applyBehaviour(particle: any) {
+        if (endAnimationTriggered) {
+          particle.fadeOutProgress++;
+          particle.alpha = 1 - particle.fadeOutProgress / fadeOutDuration;
+
+          if (particle.fadeOutProgress >= fadeOutDuration) {
+            particle.dead = true;
+          }
+          return;
+        }
+
         // Gradually move the particle towards its final position
         particle.p.x +=
           (particle.textPosition.x - particle.p.x) * particle.velocity; // Move x towards target
@@ -79,8 +93,18 @@ const animationTypeToBehaviorMap: Record<
             (_particle) => _particle.reachedTarget
           ).length;
 
-          if (endAnimationTriggerCount === reachedCount && onAnimationEnd) {
+          if (
+            endAnimationTriggerCount === reachedCount &&
+            onAnimationEnd &&
+            !endAnimationTriggered
+          ) {
             onAnimationEnd(AnimationType.FADE_IN);
+            endAnimationTriggered = true;
+
+            // Start fade-out for all particles
+            particles.forEach((_particle) => {
+              _particle.fadeOutProgress = 0;
+            });
           }
         }
       },

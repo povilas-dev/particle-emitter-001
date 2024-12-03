@@ -13,25 +13,31 @@ function App() {
   const speed = 4;
   const particleAmount = 3000;
   const svgTextRef = useRef<SVGSVGElement>(null);
+  const [fontSize, setFontSize] = useState(100);
 
-  const {ref, triggerAnimation} = useProtonEmitter({
+  const {canvasRef, triggerAnimation} = useProtonEmitter({
     text,
     colors,
     radius,
     speed,
     animation,
     particleAmount,
-    onAnimationEnd: () => {
+    setFontSize,
+    onAnimationEnd: (triggeredAnimation) => {
       if (svgTextRef.current) {
-        if (animation === AnimationType.FADE_IN) {
+        if (triggeredAnimation === AnimationType.FADE_IN) {
           svgTextRef.current.classList.remove('fade-out');
           svgTextRef.current.classList.add('fade-in', 'one');
+          svgTextRef.current.style.animationDuration = `${2 / speed}s`;
+        } else {
+          svgTextRef.current.style.animationDuration = `${1 / (speed * 2)}s`;
         }
       }
     },
   });
 
   const handleTriggerAnimation = () => {
+    // If animation was fadeOut, we ant to trigger it right away
     if (animation === AnimationType.FADE_OUT) {
       if (svgTextRef.current) {
         svgTextRef.current.classList.remove('fade-in');
@@ -83,7 +89,7 @@ function App() {
           position: 'relative',
         }}
       >
-        <canvas ref={ref} />
+        <canvas ref={canvasRef} />
         <div
           style={{
             zIndex: 1000,
@@ -107,7 +113,7 @@ function App() {
               textAnchor="middle"
               dominantBaseline="middle"
               fontFamily="Arial"
-              fontSize="168.874px"
+              fontSize={`${fontSize}px`}
             >
               {text}
             </text>
