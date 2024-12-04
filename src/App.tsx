@@ -9,7 +9,7 @@ function App() {
   );
   const text = '!!!';
   const colors = [{color: '#FF0000'}];
-  const radius = 5;
+  const radius = 8;
   const speed = 8;
   const particleAmount = 3000;
   const svgTextRef = useRef<SVGSVGElement>(null);
