@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {useProtonEmitter} from './hooks/useProtonEmitter';
 import './App.css';
 import {AnimationType} from './interfaces';
@@ -15,7 +15,7 @@ function App() {
   const svgTextRef = useRef<SVGSVGElement>(null);
   const [fontSize, setFontSize] = useState(100);
 
-  const {canvasRef, triggerAnimation} = useProtonEmitter({
+  const {canvasRef, triggerAnimation, resetAnimation} = useProtonEmitter({
     text,
     colors,
     radius,
@@ -23,10 +23,9 @@ function App() {
     animation,
     particleAmount,
     setFontSize,
-    onAnimationEnd: (triggeredAnimation) => {
+    onAnimationEnd: () => {
       if (svgTextRef.current) {
-        if (triggeredAnimation === AnimationType.FADE_IN) {
-          svgTextRef.current.classList.remove('fade-out');
+        if (animation === AnimationType.FADE_IN) {
           svgTextRef.current.classList.add('fade-in', 'one');
           svgTextRef.current.style.animationDuration = `${2 / speed}s`;
         } else {
@@ -36,7 +35,20 @@ function App() {
     },
   });
 
+  const removeAnimationStyles = useCallback(() => {
+    if (svgTextRef.current) {
+      console.log('remove animation styles');
+      svgTextRef.current.classList.remove('fade-in', 'fade-out', 'one');
+    }
+  }, []);
+
+  const doReset = () => {
+    removeAnimationStyles();
+    resetAnimation();
+  };
+
   const handleTriggerAnimation = () => {
+    doReset();
     // If animation was fadeOut, we ant to trigger it right away
     if (animation === AnimationType.FADE_OUT) {
       if (svgTextRef.current) {
