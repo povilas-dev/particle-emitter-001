@@ -111,8 +111,8 @@ svg {
 }
 
 .fade-out.one {
-  -webkit-animation-delay: 0.1s;
-  -moz-animation-delay: 0.1s;
+  -webkit-animation-delay: 0s;
+  -moz-animation-delay: 0s;
   animation-delay: 0s;
 
   text {
@@ -121,9 +121,9 @@ svg {
 }
 
 .fade-in.one {
-  -webkit-animation-delay: 0.1s;
-  -moz-animation-delay: 0.1s;
-  animation-delay: 0.1s;
+  -webkit-animation-delay: 0s;
+  -moz-animation-delay: 0s;
+  animation-delay: 0s;
 
   text {
     fill: red;

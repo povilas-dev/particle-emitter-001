@@ -28,7 +28,7 @@ const animationTypeToBehaviorMap: Record<
     particleAmount,
     particles,
   }) => {
-    const endAnimationTriggerCount = Math.round(particleAmount * 0.7);
+    const endAnimationTriggerCount = Math.round(particleAmount * 0.9);
     const fadeOutDuration = 60; // Number of frames for fade-out (adjust as needed)
     let endAnimationTriggered = false;
 
