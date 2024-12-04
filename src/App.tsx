@@ -10,7 +10,7 @@ function App() {
   const text = 'hello';
   const colors = [{color: '#FF0000'}];
   const radius = 5;
-  const speed = 8;
+  const speed = 4;
   const particleAmount = 3000;
   const svgTextRef = useRef<SVGSVGElement>(null);
   const [fontSize, setFontSize] = useState(100);
