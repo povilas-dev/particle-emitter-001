@@ -244,7 +244,6 @@ const animationHandlersMapByAnimation = {
 export const configureEmitter = ({
   canvas,
   emitter,
-  context,
   img,
   colors,
   radius,
@@ -264,25 +263,32 @@ export const configureEmitter = ({
   particleAmount: number;
   onAnimationEnd?: OnAnimationEndType;
 }) => {
-  // Draw the provided image onto the canvas
-  context?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  // Create OffscreenCanvas for image analysis
+  const analysisCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+  const analysisContext = analysisCanvas.getContext('2d');
+
+  // Analyze image data without affecting main canvas
+  analysisContext?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const imageData = analysisContext?.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+  const textZone = new Proton.ImageZone(imageData, 0, 0);
 
   // Define a rectangular zone slightly larger than the canvas to accommodate particle movement
   const rect = new Proton.Rectangle(
-    0 - 50,
-    0 - 50,
-    canvas.width + 100,
-    canvas.height + 100
+    0,
+    0,
+    canvas.width,
+    canvas.height
   ) as unknown as {
     x: number;
     y: number;
     width: number;
     height: number;
   };
-
-  // Get the image data from the canvas to define the text zone
-  const imageData = context?.getImageData(0, 0, canvas.width, canvas.height);
-  const textZone = new Proton.ImageZone(imageData, 0, 0);
 
   // Initialize particle positions within the defined rectangular zone
   emitter.addInitialize(

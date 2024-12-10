@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {useProtonEmitter} from './hooks/useProtonEmitter';
 import './App.css';
 import {AnimationType} from './interfaces';
@@ -10,10 +10,11 @@ function App() {
   const text = '!!!';
   const colors = [{color: '#FF0000'}];
   const radius = 8;
-  const speed = 8;
+  const speed = 4;
   const particleAmount = 3000;
   const svgTextRef = useRef<SVGSVGElement>(null);
   const [fontSize, setFontSize] = useState(100);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const {canvasRef, triggerAnimation, resetAnimation} = useProtonEmitter({
     text,
@@ -56,6 +57,16 @@ function App() {
     triggerAnimation();
   };
 
+  useEffect(() => {
+    if (parentRef.current && canvasRef.current) {
+      const {width, height} = parentRef.current.getBoundingClientRect();
+
+      canvasRef.current.width = width;
+      canvasRef.current.height = height;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div>
       <fieldset style={{width: '250px'}}>
@@ -91,6 +102,7 @@ function App() {
         </button>
       </div>
       <div
+        ref={parentRef}
         style={{
           backgroundColor: 'black',
           height: '400px',
