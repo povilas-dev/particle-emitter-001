@@ -55,7 +55,9 @@ export const useProtonEmitter = ({
   // Handle canvas resize and particle system setup
   const emitParticles = useCallback(() => {
     const canvas = canvasRef.current!;
-    const context = canvas.getContext('2d', {willReadFrequently: true});
+    const context = canvas.getContext('webgl', {
+      willReadFrequently: true,
+    });
 
     // Cleanup previous URL if exists
     if (urlRef.current) {
@@ -69,7 +71,10 @@ export const useProtonEmitter = ({
     }
 
     // Clear canvas and reset particle system
-    context?.clearRect(0, 0, canvas.width, canvas.height);
+    if (context) {
+      // @ts-expect-error
+      context.clear(context.COLOR_BUFFER_BIT);
+    }
     emitterRef.current.removeAllParticles();
     emitterRef.current.initializes = [];
     emitterRef.current.behaviours = [];
@@ -87,7 +92,6 @@ export const useProtonEmitter = ({
       const {emitter, initialize, trigger, reset} = configureEmitter({
         canvas,
         emitter: emitterRef.current,
-        context: context!,
         img,
         colors: configRef.current?.colors,
         radius: configRef.current?.radius,

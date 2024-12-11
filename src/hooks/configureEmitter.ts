@@ -5,6 +5,16 @@ import {AnimationType, OnAnimationEndType} from '../interfaces';
 const ANGLE_INCREMENT = 0.02;
 const MAX_ORBIT_RADIUS = 9;
 
+let animationEndTriggered = false;
+
+const getAnimationEndTriggered = () => {
+  return animationEndTriggered;
+};
+const setAnimationEndTriggered = (val: boolean) => {
+  console.log('setAnimationEndTriggered: ', val);
+  animationEndTriggered = val;
+};
+
 interface AnimationTypeBehaviorProps {
   radius: number;
   speed: number;
@@ -12,7 +22,7 @@ interface AnimationTypeBehaviorProps {
   textZone: Proton.ImageZone;
   onAnimationEnd?: OnAnimationEndType;
   particleAmount: number;
-  particles: any[];
+  getEmitterParticles: () => any[];
 }
 
 const animationTypeToBehaviorMap: Record<
@@ -26,11 +36,10 @@ const animationTypeToBehaviorMap: Record<
     textZone,
     onAnimationEnd,
     particleAmount,
-    particles,
+    getEmitterParticles,
   }) => {
     const endAnimationTriggerCount = Math.round(particleAmount * 0.9);
     const fadeOutDuration = 60; // Number of frames for fade-out (adjust as needed)
-    let endAnimationTriggered = false;
 
     return {
       initialize(particle: any) {
@@ -58,15 +67,18 @@ const animationTypeToBehaviorMap: Record<
         // Set initial particle properties
         particle.radius = radius * 0.2; // Initial radius
         particle.alpha = 1; // Start transparent
+        particle.reachedTarget = false;
 
         particle.fadeOutProgress = 0;
       },
       applyBehaviour(particle: any) {
-        if (endAnimationTriggered) {
+        // console.log(getAnimationEndTriggered())
+        if (getAnimationEndTriggered() && particle.reachedTarget) {
           particle.fadeOutProgress++;
           particle.alpha = 1 - particle.fadeOutProgress / fadeOutDuration;
 
           if (particle.fadeOutProgress >= fadeOutDuration) {
+            particle.reachedTarget = false;
             particle.dead = true;
           }
           return;
@@ -89,20 +101,20 @@ const animationTypeToBehaviorMap: Record<
           !particle.reachedTarget
         ) {
           particle.reachedTarget = true; // Mark particle as having reached its target
-          const reachedCount = particles.filter(
+          const reachedCount = getEmitterParticles().filter(
             (_particle) => _particle.reachedTarget
           ).length;
 
           if (
             endAnimationTriggerCount === reachedCount &&
             onAnimationEnd &&
-            !endAnimationTriggered
+            !getAnimationEndTriggered()
           ) {
             onAnimationEnd(AnimationType.FADE_IN);
-            endAnimationTriggered = true;
+            setAnimationEndTriggered(true);
 
             // Start fade-out for all particles
-            particles.forEach((_particle) => {
+            getEmitterParticles().forEach((_particle) => {
               _particle.fadeOutProgress = 0;
             });
           }
@@ -193,6 +205,7 @@ const animationHandlersMapByAnimation = {
     trigger: () => {
       // Remove all particles and emit once to start the fade-in animation
       emitter.removeAllParticles();
+      setAnimationEndTriggered(false);
       emitter.emit('once');
     },
     reset: () => {
@@ -231,7 +244,6 @@ const animationHandlersMapByAnimation = {
 export const configureEmitter = ({
   canvas,
   emitter,
-  context,
   img,
   colors,
   radius,
@@ -242,7 +254,6 @@ export const configureEmitter = ({
 }: {
   canvas: HTMLCanvasElement;
   emitter: any;
-  context: CanvasRenderingContext2D;
   img: HTMLImageElement;
   colors: Array<Record<string, {color: string}>>;
   radius: number;
@@ -251,25 +262,32 @@ export const configureEmitter = ({
   particleAmount: number;
   onAnimationEnd?: OnAnimationEndType;
 }) => {
-  // Draw the provided image onto the canvas
-  context?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  // Create OffscreenCanvas for image analysis
+  const analysisCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+  const analysisContext = analysisCanvas.getContext('2d');
+
+  // Analyze image data without affecting main canvas
+  analysisContext?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const imageData = analysisContext?.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+  const textZone = new Proton.ImageZone(imageData, 0, 0);
 
   // Define a rectangular zone slightly larger than the canvas to accommodate particle movement
   const rect = new Proton.Rectangle(
-    0 - 50,
-    0 - 50,
-    canvas.width + 100,
-    canvas.height + 100
+    0,
+    0,
+    canvas.width,
+    canvas.height
   ) as unknown as {
     x: number;
     y: number;
     width: number;
     height: number;
   };
-
-  // Get the image data from the canvas to define the text zone
-  const imageData = context?.getImageData(0, 0, canvas.width, canvas.height);
-  const textZone = new Proton.ImageZone(imageData, 0, 0);
 
   // Initialize particle positions within the defined rectangular zone
   emitter.addInitialize(
@@ -296,12 +314,13 @@ export const configureEmitter = ({
       textZone,
       onAnimationEnd,
       particleAmount,
-      particles: emitter.particles,
+      getEmitterParticles: () => emitter.particles,
     })
   );
 
   // Retrieve handlers for the specified animation type
   const handlers = animationHandlersMapByAnimation[animation](emitter);
+  console.log({emitter});
 
   return {emitter, ...handlers};
 };

@@ -5,7 +5,7 @@ export const initializeProton = (
 ): {proton: Proton; emitter: Proton.Emitter} => {
   const proton = new Proton();
   const emitter = new Proton.Emitter({life: Infinity, dead: false});
-  const renderer = new Proton.CanvasRenderer(canvas);
+  const renderer = new Proton.WebGLRenderer(canvas);
   proton.addRenderer(renderer);
   return {proton, emitter};
 };
