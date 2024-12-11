@@ -254,7 +254,6 @@ export const configureEmitter = ({
 }: {
   canvas: HTMLCanvasElement;
   emitter: any;
-  context: CanvasRenderingContext2D;
   img: HTMLImageElement;
   colors: Array<Record<string, {color: string}>>;
   radius: number;
@@ -321,6 +320,7 @@ export const configureEmitter = ({
 
   // Retrieve handlers for the specified animation type
   const handlers = animationHandlersMapByAnimation[animation](emitter);
+  console.log({emitter});
 
   return {emitter, ...handlers};
 };

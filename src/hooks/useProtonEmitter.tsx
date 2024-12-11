@@ -55,7 +55,9 @@ export const useProtonEmitter = ({
   // Handle canvas resize and particle system setup
   const emitParticles = useCallback(() => {
     const canvas = canvasRef.current!;
-    const context = canvas.getContext('webgl', {willReadFrequently: true});
+    const context = canvas.getContext('webgl', {
+      willReadFrequently: true,
+    });
 
     // Cleanup previous URL if exists
     if (urlRef.current) {
